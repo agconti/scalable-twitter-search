@@ -2,7 +2,7 @@ const CRC32 = require('crc-32')
 
 const wordToIndexServer = word => {
     NUM_CACHES = 4
-    const cacheId = CRC32.str(word) % NUM_CACHES
+    const cacheId = Math.abs(CRC32.str(word)) % NUM_CACHES
     return [cacheId, word]
 }
 
