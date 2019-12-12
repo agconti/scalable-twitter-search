@@ -1,0 +1,22 @@
+{
+  "name": "scalable-twitter-search",
+  "version": "1.0.0",
+  "description": "An example architecture of how search at Twitter's scale. ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agconti/scalable-twitter-search.git"
+  },
+  "author": "Andrew Conti",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/agconti/scalable-twitter-search/issues"
+  },
+  "homepage": "https://github.com/agconti/scalable-twitter-search#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
