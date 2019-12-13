@@ -7,34 +7,37 @@ services:
       MYSQL_ROOT_PASSWORD: secret
     ports: 
       - "2000:3306"
+  
+  index_server:
+    image: redis
+    ports:
+      - "4000:6379"
       
+  index_builder:
+    image: redis
+    ports:
+      - "5000:6379"
+
   application:
     build: .
     environment: 
       PORT: 3000
-      MYSQL_DATABASE: tweets
-      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_HOST: host,
+      MYSQL_ROOT_PASSWORD: secret,
+      MYSQL_DATABASE: tweets,
+      MYSQL_CONNECTION_LIMIT: 10
     ports:
-    - "3000:3000"
+      - "3000:3000"
     volumes:
-    - .:/code
+      - .:/code
     depends_on: 
       - db
       - index_server
       - index_builder
-  index_server:
-    image: redis
-    environment: 
-      PORT: 4000
-    ports:
-    - "4000:4000"
-    volumes:
-    - .:/code
-  index_builder:
-    image: redis
-    environment: 
-      PORT: 5000
-    ports:
-    - "5000:5000"
-    volumes:
-    - .:/code
+    resources:
+        limits:
+          cpus: '0.50'
+          memory: 50M
+        reservations:
+          cpus: '0.25'
+          memory: 20M
