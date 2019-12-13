@@ -1,4 +1,8 @@
-const CRC32 = require('crc-32')
+import CRC32 from 'crc-32'
+
+const getTweeIdsContainingWordFromIndex = async (cacheId, word) => {
+    return redis[cacheId].hget(word)
+}
 
 const wordToIndexServer = word => {
     NUM_CACHES = 4
