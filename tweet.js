@@ -1,43 +1,7 @@
-import  { UniqueID } from 'nodejs-snowflake'
-import mysql from 'mysql'
-import { saveTweet } from './tweet'
+import { UniqueID } from 'nodejs-snowflake'
 import { indexTweet } from './index-server'
-const { 
-    MYSQL_HOST: host,
-    MYSQL_USER: user,
-    MYSQL_PASSWORD: password,
-    MYSQL_DB: database,
-    MYSQL_CONNECTION_LIMIT: connectionLimit
-}  = process.env
-const pool  = mysql.createPool({
-    connectionLimit,
-    host,
-    user,
-    password,
-    database,
-})
-const TWEET_TABLE = 'tweets'
-
-const queryDatabase = async query => {
-    return new Promise((res, rej) => {
-        pool.getConnection(function(err, connection) {
-            if (err) {
-                rej(err)
-            }
-        
-            connection.query(query, function (error, results, fields) {
-                connection.release()
-                
-                if (error) {
-                    rej(error)
-                    return
-                }
-            
-                res(results)
-            })
-        })
-    })   
-}
+import { queryDatabase } from './db'
+import * as cache from './database-cache'
 
 export const saveTweet = async (tweetId, content) => {
     const tweetId = new UniqueID()
@@ -49,13 +13,22 @@ export const saveTweet = async (tweetId, content) => {
 }
 
 export const getTweetsById = tweetIds => {
-    const formattedTweetIds = tweetIds.reduce((acc, item) => {
+    const {tweets, idsNotInCache} = await cache.get(tweetIds)
+
+    if (!idsNotInCache.length) {
+        return tweets
+    }
+
+    const formattedTweetIds = idsNotInCache.reduce((acc, item) => {
         if (!acc.length) {
             return `${item}`
         }
         return `${acc}, ${item}`
     }, '')
-    return queryDatabase(`SELECT tweet_id, content FROM ${TWEET_TABLE} WHERE tweet_id in (${formattedTweetIds});`)
+    tweetsFromDb = await queryDatabase(`SELECT tweet_id, content FROM ${TWEET_TABLE} WHERE tweet_id in (${formattedTweetIds});`)
+    tweetsFromDb.map(cache.set)
+
+    return [...tweets, ...tweetsFromDb]
 }
 
 export const getTweetsByQuery = query => {
