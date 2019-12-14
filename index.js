@@ -11,8 +11,7 @@ app.use(morgan('dev'))
 app.get('/',  (req, res) => res.send('Hello World'))
 
 app.post('/tweets', async function createTweet (req, res) {
-    console.log(`trying to post`)
-    const {content} = req.body
+    const { content } = req.body
     await saveTweet(content)
     return res.sendStatus(201)
 })
