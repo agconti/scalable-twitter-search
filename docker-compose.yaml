@@ -1,7 +1,7 @@
 version: '3'
 services:
   db:
-    image: mysql:8.0.18
+    image: mysql:5.7.28
     environment: 
       MYSQL_DATABASE: tweets
       MYSQL_ROOT_PASSWORD: secret
@@ -9,17 +9,17 @@ services:
       - "2000:3306"
   
   database_cache:
-    image: redis
+    image: redis:5.0.7
     ports:
       - "6000:6379"
       
   index_server:
-    image: redis
+    image: redis:5.0.7
     ports:
       - "4000:6379"
       
   index_builder:
-    image: redis
+    image: redis:5.0.7
     ports:
       - "5000:6379"
 
@@ -28,9 +28,9 @@ services:
     restart: always
     environment: 
       PORT: 3000
-      MYSQL_HOST: host,
-      MYSQL_ROOT_PASSWORD: secret,
-      MYSQL_DATABASE: tweets,
+      MYSQL_HOST: db
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: tweets
       MYSQL_CONNECTION_LIMIT: 10
     ports:
       - "3000:3000"

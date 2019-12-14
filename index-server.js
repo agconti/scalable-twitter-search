@@ -1,6 +1,7 @@
 import { promisify } from 'util'
 import CRC32 from 'crc-32'
 import Redis from 'ioredis'
+import { addToIndexBuilderServer } from './index-builder.js'
 const indexServers = [
     new Redis("redis://index_server:6379/0"),
     new Redis("redis://index_server:6379/0"),
@@ -20,7 +21,7 @@ export const getTweetIdsFromIndex = async query => {
     const serverWordPairs = words.map(wordToIndexServer)
 
     const cacheRequests = serverWordPairs.map(([redis, word]) => {
-        const get = promisify(redis.smembers)
+        const get = redis.smembers
         return get(word)
     })
 
@@ -33,12 +34,9 @@ export const indexTweet = async (tweetId, content) => {
     const words = content.split(" ")
     const serverWordPairs = words.map(wordToIndexServer)
     
-    const requestsToIndexServers = serverWordPairs.map(([redis, word]) => {
-        const add = promisify(redis.sadd)
-        return add(word, tweetId)
-    })
+    const requestsToIndexServers = serverWordPairs.map(([redis, word]) => redis.sadd(word, tweetId))
     const requestsToIndexBuilder = serverWordPairs.map(([redis, word]) => {
-        return (wordToIndexServer(word), tweetId)
+        return addToIndexBuilderServer(wordToIndexServer(word), tweetId)
     })
 
     await Promise.all([...requestsToIndexServers, requestsToIndexBuilder, ])

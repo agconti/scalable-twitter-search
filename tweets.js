@@ -1,15 +1,15 @@
 import * as snowflake from 'nodejs-snowflake'
 import { indexTweet } from './index-server.js'
-import { queryDatabase } from './db.js'
+import { queryDatabase, TWEET_TABLE } from './db.js'
 import * as cache from './database-cache.js'
+const uid = new snowflake.default.UniqueID()
 
 export const saveTweet = async (content) => {
-    console.log(snowflake)
-    const tweetId = new snowflake.UniqueID()
+    const tweetId = await uid.asyncGetUniqueID()
     
     await Promise.all([
         indexTweet(tweetId, content),
-        queryDatabase(`INSERT INTO ${TWEET_TABLE} (tweet_id, content) VALUES (${tweetId}, ${content});`)
+        queryDatabase(`INSERT INTO ${TWEET_TABLE} (tweet_id, content) VALUES (${tweetId}, "${content}");`)
     ])
 }
 
@@ -33,5 +33,5 @@ export const getTweetsById = async tweetIds => {
 }
 
 export const getTweetsByQuery = query => {
-    return queryDatabase(`SELECT tweet_id, content FROM ${TWEET_TABLE} WHERE MATCH (content) AGAINST (${query});`);
+    return queryDatabase(`SELECT tweet_id, content FROM ${TWEET_TABLE} WHERE MATCH (content) AGAINST ("${query}");`);
 }
