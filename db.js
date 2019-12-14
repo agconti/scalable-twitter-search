@@ -38,7 +38,9 @@ export const queryDatabase = async query => {
                     rej(error)
                     return
                 }
-            
+                
+                console.log(`results`, results)
+                console.log(`fields`, fields)
                 res(results)
             })
         })

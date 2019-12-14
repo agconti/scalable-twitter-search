@@ -20,10 +20,7 @@ export const getTweetIdsFromIndex = async query => {
     const words = query.split(" ")
     const serverWordPairs = words.map(wordToIndexServer)
 
-    const cacheRequests = serverWordPairs.map(([redis, word]) => {
-        const get = redis.smembers
-        return get(word)
-    })
+    const cacheRequests = serverWordPairs.map(([redis, word]) => redis.smembers(word))
 
     const tweetIds = await Promise.all(cacheRequests).then(items => items.flat())
     return tweetIds
