@@ -1,5 +1,5 @@
-import * as db from './db'
-import * as indexServer from './index-server'
+import * as db from './tweets.js'
+import * as indexServer from './index-server.js'
 
 const search = async (req, res) => {
     const { params: { query } } = req

@@ -8,6 +8,11 @@ services:
     ports: 
       - "2000:3306"
   
+  database_cache:
+    image: redis
+    ports:
+      - "6000:6379"
+      
   index_server:
     image: redis
     ports:
@@ -20,6 +25,7 @@ services:
 
   application:
     build: .
+    restart: always
     environment: 
       PORT: 3000
       MYSQL_HOST: host,
@@ -29,15 +35,9 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - .:/code
+      - .:/app
+      - /app/node_modules
     depends_on: 
       - db
       - index_server
       - index_builder
-    resources:
-        limits:
-          cpus: '0.50'
-          memory: 50M
-        reservations:
-          cpus: '0.25'
-          memory: 20M

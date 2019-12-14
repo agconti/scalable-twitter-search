@@ -1,8 +1,8 @@
 import { promisify } from 'util'
 import Redis from 'ioredis'
-import { getTweetsById } from './tweet'
-import { indexTweet } from './index-server'
-const indexBuilderServer = new Redis("redis://:@index_builder:6380/0")
+import { getTweetsById } from './tweets.js'
+import { indexTweet } from './index-server.js'
+const indexBuilderServer = new Redis("redis://index_builder:6379/0")
 
 export const addToIndexBuilderServer = async (indexServerId, tweetId) => {
     const add = promisify(indexBuilderServer.sadd)

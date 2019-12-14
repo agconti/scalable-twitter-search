@@ -1,10 +1,11 @@
-import { UniqueID } from 'nodejs-snowflake'
-import { indexTweet } from './index-server'
-import { queryDatabase } from './db'
-import * as cache from './database-cache'
+import * as snowflake from 'nodejs-snowflake'
+import { indexTweet } from './index-server.js'
+import { queryDatabase } from './db.js'
+import * as cache from './database-cache.js'
 
-export const saveTweet = async (tweetId, content) => {
-    const tweetId = new UniqueID()
+export const saveTweet = async (content) => {
+    console.log(snowflake)
+    const tweetId = new snowflake.UniqueID()
     
     await Promise.all([
         indexTweet(tweetId, content),
@@ -12,7 +13,7 @@ export const saveTweet = async (tweetId, content) => {
     ])
 }
 
-export const getTweetsById = tweetIds => {
+export const getTweetsById = async tweetIds => {
     const {tweets, idsNotInCache} = await cache.get(tweetIds)
 
     if (!idsNotInCache.length) {

@@ -1,12 +1,11 @@
 import { promisify } from 'util'
 import CRC32 from 'crc-32'
 import Redis from 'ioredis'
-import { addToIndexBuilderServer } from './index-builder'
 const indexServers = [
-    new Redis("redis://:@index_server1:6380/0"),
-    new Redis("redis://:@index_server2:6380/0"),
-    new Redis("redis://:@index_server3:6380/0"),
-    new Redis("redis://:@index_server4:6380/0"),
+    new Redis("redis://index_server:6379/0"),
+    new Redis("redis://index_server:6379/0"),
+    new Redis("redis://index_server:6379/0"),
+    new Redis("redis://index_server:6379/0"),
 ]
 
 
