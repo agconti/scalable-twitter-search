@@ -5,6 +5,8 @@ services:
     environment: 
       MYSQL_DATABASE: tweets
       MYSQL_ROOT_PASSWORD: secret
+    volumes: 
+      - ./fixture.sql:/docker-entrypoint-initdb.d/fixture.sql
     ports: 
       - "2000:3306"
   
