@@ -5,20 +5,13 @@ const {
     MYSQL_DATABASE: database,
     MYSQL_CONNECTION_LIMIT: connectionLimit
 }  = process.env
-console.log(`connetion info`, {
-    connectionLimit,
-    host,
-    user: 'root',
-    password,
-    database,
-})
 const pool  = mysql.createPool({
     connectionLimit,
     host,
     user: 'root',
     password,
     database,
-    debug: true
+    debug: false
 })
 
 export const TWEET_TABLE = 'tweets'
@@ -38,9 +31,7 @@ export const queryDatabase = async query => {
                     rej(error)
                     return
                 }
-                
-                console.log(`results`, results)
-                console.log(`fields`, fields)
+
                 res(results)
             })
         })
