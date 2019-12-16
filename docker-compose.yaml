@@ -44,6 +44,7 @@ services:
       INDEX_SERVER_SHARD_3: 'redis://index_server:6379/0'
       INDEX_SERVER_SHARD_4: 'redis://index_server:6379/0'
       DATABASE_CACHE: 'redis://database_cache:6379/0'
+      INDEX_BUILDER: 'redis://index_builder:6379/0'
     ports:
       - "3000:3000"
     volumes:
@@ -51,5 +52,6 @@ services:
       - /app/node_modules
     depends_on: 
       - db
+      - database_cache
       - index_server
       - index_builder
