@@ -28,7 +28,7 @@ export const getTweetIdsFromIndex = async query => {
   return tweetIds
 }
 
-export const indexTweet = async (tweetId, content) => {
+export const indexTweet = async ({ tweetId, content }) => {
   const words = normalizeContent(content)
   const serverWordPairs = words.map(wordToIndexServer)
 

@@ -14,7 +14,7 @@ services:
     image: redis:5.0.7
     ports:
       - "6000:6379"
-    entrypoint: './redis-server --maxmemory 1mb --maxmemory-policy allkeys-lru'
+    command: 'redis-server --maxmemory 1mb --maxmemory-policy allkeys-lru'
       
   index_server:
     image: redis:5.0.7
@@ -29,12 +29,16 @@ services:
   application:
     build: .
     restart: always
+    command: 'npm run start:dev'
     environment: 
       PORT: 3000
-      MYSQL_HOST: db
+      MYSQL_HOST_SHARD_1: db
+      MYSQL_HOST_SHARD_2: db
+      MYSQL_USER: root
       MYSQL_ROOT_PASSWORD: secret
       MYSQL_DATABASE: tweets
       MYSQL_CONNECTION_LIMIT: 10
+      MYSQL_DEBUG: null
     ports:
       - "3000:3000"
     volumes:

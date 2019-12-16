@@ -1,24 +1,26 @@
+
+import CRC32 from 'crc-32'
 import mysql from 'mysql'
+import { tweetSerializer } from './serializers.js'
 const {
-  MYSQL_HOST: host,
+  MYSQL_HOST_SHARD_1: shardOneHost,
+  MYSQL_HOST_SHARD_2: shardTwoHost,
   MYSQL_ROOT_PASSWORD: password,
+  MYSQL_USER: user,
   MYSQL_DATABASE: database,
-  MYSQL_CONNECTION_LIMIT: connectionLimit
+  MYSQL_CONNECTION_LIMIT: connectionLimit,
+  MYSQL_DEBUG: debug
 } = process.env
-const pool = mysql.createPool({
-  connectionLimit,
-  host,
-  user: 'root',
-  password,
-  database,
-  debug: false
-})
+const TWEET_TABLE = 'tweets'
+const databaseServers = [
+  mysql.createPool({ host: shardOneHost, user, password, database, connectionLimit, debug }),
+  mysql.createPool({ host: shardTwoHost, user, password, database, connectionLimit, debug })
+]
 
-export const TWEET_TABLE = 'tweets'
-
-export const queryDatabase = async query => {
+const queryDatabase = async (shardId, query) => {
   return new Promise((resolve, reject) => {
-    pool.getConnection((err, connection) => {
+    const shard = databaseServers[shardId]
+    shard.getConnection((err, connection) => {
       if (err) {
         reject(err)
         return
@@ -32,8 +34,64 @@ export const queryDatabase = async query => {
           return
         }
 
-        resolve(results)
+        if (Array.isArray(results)) {
+            const serializedResults = results.map(tweetSerializer)
+            resolve(serializedResults)
+            return
+        }
+        return resolve(results)
       })
     })
   })
+}
+
+const shardKey = id => Math.abs(CRC32.str(`${id}`)) % databaseServers.length
+
+const formatIds = ids => ids.reduce((acc, id) => {
+  if (!acc.length) {
+    return `${id}`
+  }
+  return `${acc}, ${id}`
+}, '')
+
+const groupByShardKey = ids => {
+  return ids.reduce((acc, id) => {
+    const shardId = shardKey(id)
+    const groupedIds = acc[shardId] || []
+
+    return {
+      ...acc,
+      [shardId]: [...groupedIds, id]
+    }
+  }, {})
+}
+
+export const getByIds = async ids => {
+    console.log(`querying db for ids`, ids)
+  const shardGroups = groupByShardKey(ids)
+  const requests = Object.entries(shardGroups)
+    .map(([shardId, idsOnShard]) => {
+        console.log(`querying shard or ids`, shardId, formatIds(idsOnShard))
+      return queryDatabase(
+        shardId,
+        `SELECT tweet_id, content FROM ${TWEET_TABLE} WHERE tweet_id in (${formatIds(idsOnShard)});`
+      )
+    })
+
+  const result = await Promise.all(requests).then(results => results.reduce((acc, item) => [...acc, ...item], []))
+  return result
+}
+
+export const insert = ({ tweetId, content }) => {
+  const shardId = shardKey(tweetId)
+  return queryDatabase(shardId, `INSERT INTO ${TWEET_TABLE} (tweet_id, content) VALUES (${tweetId}, "${content}");`)
+}
+
+export const fullTextSearch = async query => {
+  const requests = databaseServers.map((server, shardId) => {
+    return queryDatabase(shardId, `SELECT tweet_id, content FROM ${TWEET_TABLE} WHERE MATCH (content) AGAINST ("${query}");`)
+  })
+
+  const result = await Promise.all(requests).then(results => results.reduce((acc, item) => [...acc, ...item], []))
+  return result
 }
