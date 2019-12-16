@@ -1,11 +1,12 @@
 import CRC32 from 'crc-32'
 import Redis from 'ioredis'
 import { addToIndexBuilderServer } from './index-builder.js'
+const { INDEX_SERVER_SHARD_1, INDEX_SERVER_SHARD_2, INDEX_SERVER_SHARD_3, INDEX_SERVER_SHARD_4 } = process.env
 const indexServers = [
-  new Redis('redis://index_server:6379/0'),
-  new Redis('redis://index_server:6379/0'),
-  new Redis('redis://index_server:6379/0'),
-  new Redis('redis://index_server:6379/0')
+  new Redis(INDEX_SERVER_SHARD_1),
+  new Redis(INDEX_SERVER_SHARD_2),
+  new Redis(INDEX_SERVER_SHARD_3),
+  new Redis(INDEX_SERVER_SHARD_4)
 ]
 
 const normalizeContent = content => {

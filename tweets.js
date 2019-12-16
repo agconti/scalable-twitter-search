@@ -18,21 +18,21 @@ export const getTweetsById = async tweetIds => {
   const { tweets, idsNotInCache } = await cache.get(tweetIds)
 
   if (!idsNotInCache.length) {
-    console.log(`🤖CACHED ITEMS`)
-    console.log(`🤖CACHED ITEMS`)
-    console.log(`🤖CACHED ITEMS`)
+    console.log('🤖CACHED ITEMS')
+    console.log('🤖CACHED ITEMS')
+    console.log('🤖CACHED ITEMS')
 
     return tweets
   }
 
-  console.log(`🔥UNCACHED ITEMS 🔥🔥🔥`)
-  console.log(`🔥UNCACHED ITEMS 🔥🔥🔥`)
-  console.log(`🔥UNCACHED ITEMS 🔥🔥🔥`)
+  console.log('🔥UNCACHED ITEMS 🔥🔥🔥')
+  console.log('🔥UNCACHED ITEMS 🔥🔥🔥')
+  console.log('🔥UNCACHED ITEMS 🔥🔥🔥')
 
   const tweetsFromDb = await db.getByIds(idsNotInCache)
   tweetsFromDb.map(cache.set)
 
-  console.log(`looking for`, tweetIds, `tweets FROM cache`, tweets, `tweetsFromDb`, tweetsFromDb)
+  console.log('looking for', tweetIds, 'tweets FROM cache', tweets, 'tweetsFromDb', tweetsFromDb)
   return [...tweets, ...tweetsFromDb]
 }
 
@@ -56,7 +56,7 @@ export const search = async (req, res) => {
 }
 
 export const create = async (req, res) => {
-    const { content } = req.body
-    await saveTweet(content)
-    return res.sendStatus(201)
-}   
+  const { content } = req.body
+  await saveTweet(content)
+  return res.sendStatus(201)
+}

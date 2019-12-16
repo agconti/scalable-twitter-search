@@ -1,7 +1,7 @@
 import Redis from 'ioredis'
 import { getTweetsById } from './tweets.js'
 import { indexTweet } from './index-server.js'
-const indexBuilderServer = new Redis('redis://index_builder:6379/0')
+const indexBuilderServer = new Redis(process.env.INDEX_BUILDER)
 
 export const addToIndexBuilderServer = async (indexServerId, tweetId) => {
   return indexBuilderServer.sadd(indexServerId, tweetId)

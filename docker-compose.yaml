@@ -39,6 +39,11 @@ services:
       MYSQL_DATABASE: tweets
       MYSQL_CONNECTION_LIMIT: 10
       MYSQL_DEBUG: null
+      INDEX_SERVER_SHARD_1: 'redis://index_server:6379/0'
+      INDEX_SERVER_SHARD_2: 'redis://index_server:6379/0'
+      INDEX_SERVER_SHARD_3: 'redis://index_server:6379/0'
+      INDEX_SERVER_SHARD_4: 'redis://index_server:6379/0'
+      DATABASE_CACHE: 'redis://database_cache:6379/0'
     ports:
       - "3000:3000"
     volumes:
