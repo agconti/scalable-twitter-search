@@ -68,11 +68,9 @@ const groupByShardKey = ids => {
 }
 
 export const getByIds = async ids => {
-  console.log('querying db for ids', ids)
   const shardGroups = groupByShardKey(ids)
   const requests = Object.entries(shardGroups)
     .map(([shardId, idsOnShard]) => {
-      console.log('querying shard or ids', shardId, formatIds(idsOnShard))
       return queryDatabase(
         shardId,
         `SELECT tweet_id, content FROM ${TWEET_TABLE} WHERE tweet_id in (${formatIds(idsOnShard)});`

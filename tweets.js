@@ -18,21 +18,12 @@ export const getTweetsById = async tweetIds => {
   const { tweets, idsNotInCache } = await cache.get(tweetIds)
 
   if (!idsNotInCache.length) {
-    console.log('🤖CACHED ITEMS')
-    console.log('🤖CACHED ITEMS')
-    console.log('🤖CACHED ITEMS')
-
     return tweets
   }
 
-  console.log('🔥UNCACHED ITEMS 🔥🔥🔥')
-  console.log('🔥UNCACHED ITEMS 🔥🔥🔥')
-  console.log('🔥UNCACHED ITEMS 🔥🔥🔥')
-
   const tweetsFromDb = await db.getByIds(idsNotInCache)
-  tweetsFromDb.map(cache.set)
+  tweetsFromDb.forEach(cache.set)
 
-  console.log('looking for', tweetIds, 'tweets FROM cache', tweets, 'tweetsFromDb', tweetsFromDb)
   return [...tweets, ...tweetsFromDb]
 }
 
@@ -41,7 +32,7 @@ export const getTweetsByQuery = query => {
 }
 
 export const search = async (req, res) => {
-  const { query: { query } } = req
+  const { query: { query, pageSize = 25 } } = req
   const tweetIds = await indexServer.getTweetIdsFromIndex(query)
   const noIndexedTweetsForQuery = tweetIds.length < 1
 
@@ -52,7 +43,7 @@ export const search = async (req, res) => {
   }
 
   const tweets = await getTweetsById(tweetIds)
-  res.json(tweets)
+  res.json(tweets.slice(0, pageSize))
 }
 
 export const create = async (req, res) => {

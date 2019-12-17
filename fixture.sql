@@ -31,7 +31,7 @@ DROP TABLE IF EXISTS `tweets`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tweets` (
-  `tweet_id` bigint(20) NOT NULL,
+  `tweet_id` char(20) NOT NULL,
   `content` varchar(280) CHARACTER SET utf8mb4 DEFAULT NULL,
   PRIMARY KEY (`tweet_id`),
   FULLTEXT KEY `tweets_content_full_text_idx` (`content`)
