@@ -2,6 +2,7 @@
 import CRC32 from 'crc-32'
 import mysql from 'mysql'
 import { tweetSerializer } from './serializers.js'
+const charset = 'utf8mb4'
 const {
   MYSQL_HOST_SHARD_1: shardOneHost,
   MYSQL_HOST_SHARD_2: shardTwoHost,
@@ -13,8 +14,8 @@ const {
 } = process.env
 const TWEET_TABLE = 'tweets'
 const databaseServers = [
-  mysql.createPool({ host: shardOneHost, user, password, database, connectionLimit, debug }),
-  mysql.createPool({ host: shardTwoHost, user, password, database, connectionLimit, debug })
+  mysql.createPool({ host: shardOneHost, user, password, database, charset, connectionLimit, debug }),
+  mysql.createPool({ host: shardTwoHost, user, password, database, charset, connectionLimit, debug })
 ]
 
 const queryDatabase = async (shardId, query) => {
@@ -84,12 +85,13 @@ export const getByIds = async ids => {
 
 export const insert = ({ tweetId, content }) => {
   const shardId = shardKey(tweetId)
-  return queryDatabase(shardId, `INSERT INTO ${TWEET_TABLE} (tweet_id, content) VALUES (${tweetId}, "${content}");`)
+  const server = databaseServers[shardId]
+  return queryDatabase(shardId, `INSERT INTO ${TWEET_TABLE} (tweet_id, content) VALUES (${tweetId}, "${server.escape(content)}");`)
 }
 
 export const fullTextSearch = async query => {
   const requests = databaseServers.map((server, shardId) => {
-    return queryDatabase(shardId, `SELECT tweet_id, content FROM ${TWEET_TABLE} WHERE MATCH (content) AGAINST ("${query}");`)
+    return queryDatabase(shardId, `SELECT tweet_id, content FROM ${TWEET_TABLE} WHERE MATCH (content) AGAINST ("${server.escape(query)}");`)
   })
 
   const result = await Promise.all(requests).then(results => results.reduce((acc, item) => [...acc, ...item], []))

@@ -1,8 +1,8 @@
-import * as snowflake from 'nodejs-snowflake'
+import snowflake from 'nodejs-snowflake'
 import * as indexServer from './index-server.js'
 import * as db from './db.js'
 import * as cache from './database-cache.js'
-const uid = new snowflake.default.UniqueID()
+const uid = new snowflake.UniqueID()
 
 export const saveTweet = async content => {
   const tweetId = await uid.asyncGetUniqueID()

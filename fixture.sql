@@ -2,7 +2,7 @@
 --
 -- Host: localhost    Database: tweets
 -- ------------------------------------------------------
--- Server version	5.7.28
+-- Server version       5.7.28
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -16,18 +16,26 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Current Database: `tweets`
+--
+
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `tweets` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
+
+USE `tweets`;
+
+--
 -- Table structure for table `tweets`
 --
 
 DROP TABLE IF EXISTS `tweets`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tweets` (
   `tweet_id` bigint(20) NOT NULL,
-  `content` varchar(280) DEFAULT NULL,
+  `content` varchar(280) CHARACTER SET utf8mb4 DEFAULT NULL,
   PRIMARY KEY (`tweet_id`),
-  FULLTEXT tweets_content_full_text_idx (`content`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  FULLTEXT KEY `tweets_content_full_text_idx` (`content`)
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -48,4 +56,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-12-14 15:51:32
+-- Dump completed on 2019-12-17 14:26:15
