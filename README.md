@@ -15,6 +15,18 @@ Here's a sneak peak of what we'll be building:
 ![architecutre diagram](./docs/scalable-twitter-search.svg)
 
 ## Requirements of the system
+Our goal is to build a system where users can search for tweets. 
+
+Context: 
+- Twittter has 140M daily active users. [1]
+- users create 500M tweets per day. [1]
+- The average size of a tweet is 33 characters. [2]
+- We'll asssume 500M searches for tweets per day. 
+
+
+Sources: 
+- [1]:https://www.omnicoreagency.com/twitter-statistics/
+- [2]:https://techcrunch.com/2018/10/30/twitters-doubling-of-character-count-from-140-to-280-had-little-impact-on-length-of-tweets/
 
 ### Functional Requirements
 
